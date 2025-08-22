@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 // URL สำหรับเชื่อมต่อ MongoDB
-const mongoURI = 'mongodb://localhost:27017/bananashop'; // URL เชื่อมต่อกับฐานข้อมูลชื่อ 'bananashop'
+const mongoURI = 'mongodb+srv://other_bananashop:QKDsuRQhVflCJFVZ@bananashop-cluster.e0h4ubg.mongodb.net/bananashop?retryWrites=true&w=majority'; // URL เชื่อมต่อกับฐานข้อมูลชื่อ 'bananashop'
 
 // ฟังก์ชันสำหรับเชื่อมต่อกับ MongoDB
 mongoose.connect(mongoURI) // เริ่มต้นการเชื่อมต่อ
