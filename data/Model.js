@@ -1,8 +1,9 @@
 // นำเข้า Mongoose
 const mongoose = require('mongoose');
+require('dotenv').config();   // โหลดค่าจากไฟล์ .env
 
-// URL สำหรับเชื่อมต่อ MongoDB
-const mongoURI = 'mongodb+srv://other_bananashop:QKDsuRQhVflCJFVZ@bananashop-cluster.e0h4ubg.mongodb.net/bananashop?retryWrites=true&w=majority'; // URL เชื่อมต่อกับฐานข้อมูลชื่อ 'bananashop'
+// URL สำหรับเชื่อมต่อ MongoDB (ดึงจาก .env)
+const mongoURI = process.env.MONGODB_URI;
 
 // ฟังก์ชันสำหรับเชื่อมต่อกับ MongoDB
 mongoose.connect(mongoURI) // เริ่มต้นการเชื่อมต่อ

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 
@@ -8,8 +9,10 @@ const orderRoutes = require('./routes/orderRoutes'); // เส้นทางส
 const  accountRoutes = require('./routes/accountRoutes')
 const loginRoutes = require('./routes/loginRountrs'); // เส้นทางสำหรับการล็อกอิน
 
+require('./data/Model'); // ภายในไฟล์นี้จะ connect MongoDB ด้วย MONGODB_URI
+
 const app = express();
-const PORT = 3000; // กำหนดพอร์ตสำหรับเซิร์ฟเวอร์
+const PORT = process.env.PORT || 3000; // กำหนดพอร์ตสำหรับเซิร์ฟเวอร์
 
 // ใช้ express.json() เพื่อจัดการข้อมูล JSON ในคำขอ
 app.use(express.json());
