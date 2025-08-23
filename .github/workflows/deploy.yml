@@ -11,7 +11,7 @@ env:
   ECR_REPOSITORY: my-node-app
   ECS_CLUSTER: my-node-cluster
   ECS_SERVICE: my-node-service
-  ECS_TASK_DEFINITION: ecs-task-def.json
+  ECS_TASK_DEFINITION: my-node-task
 
 jobs:
   build-and-deploy:
