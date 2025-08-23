@@ -19,7 +19,7 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::<488453322320>:role/github-actions-deployer
+          role-to-assume: arn:aws:iam::488453322320:role/github-actions-deployer
           aws-region: ap-southeast-2
 
       - name: Build and push Docker image
