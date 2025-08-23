@@ -3,7 +3,7 @@ name: Deploy to backend
 on:
   push:
     branches:
-      - main
+      - arlerus
 
 env:
   AWS_REGION: ap-southeast-2
