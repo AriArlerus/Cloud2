@@ -28,6 +28,7 @@ jobs:
           aws ecr get-login-password | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
           docker push ${{ secrets.ECR_REPO }}:latest
 
+
       - name: Force ECS service to redeploy
         run: |
           aws ecs update-service \
