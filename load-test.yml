@@ -1,0 +1,9 @@
+config:
+  target: "cloud2-production.up.railway.app"  # เปลี่ยนเป็น ALB DNS ของคุณ
+  phases:
+    - duration: 60
+      arrivalRate: 10
+scenarios:
+  - flow:
+      - get:
+          url: "/"
