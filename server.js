@@ -16,9 +16,12 @@ const PORT = process.env.PORT || 3000; // กำหนดพอร์ตสำ�
 
 // ใช้ express.json() เพื่อจัดการข้อมูล JSON ในคำขอ
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ใช้ static middleware เพื่อให้สามารถเข้าถึงไฟล์ในโฟลเดอร์ 'public'
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/health', (_, res) => res.status(200).send('OK'));
 
 // เส้นทางสำหรับแสดงหน้า HTML
 app.get('/', (req, res) => {

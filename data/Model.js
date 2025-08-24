@@ -6,7 +6,12 @@ require('dotenv').config();   // โหลดค่าจากไฟล์ .env
 const mongoURI = process.env.MONGODB_URI;
 
 // ฟังก์ชันสำหรับเชื่อมต่อกับ MongoDB
-mongoose.connect(mongoURI) // เริ่มต้นการเชื่อมต่อ
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000, // เลือกเซิร์ฟเวอร์ไม่เกิน 5s
+  socketTimeoutMS: 45000         // คุยนานสุด 45s
+}) // เริ่มต้นการเชื่อมต่อ
   .then(() => console.log('Connected to MongoDB')) // แสดงข้อความเมื่อเชื่อมต่อสำเร็จ
   .catch(err => console.error('MongoDB connection error:', err)); // แสดงข้อผิดพลาดกรณีเชื่อมต่อไม่สำเร็จ
 
