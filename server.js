@@ -1,48 +1,53 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-require('dotenv').config(); // โหลดตัวแปรจาก .env
+require('dotenv').config(); // โหลด environment variables จาก .env
 
 // นำเข้าเส้นทางของโมดูลที่เกี่ยวข้อง
-const { router: cartRoutes } = require('./routes/cartRoutes'); // เส้นทางสำหรับจัดการตะกร้าสินค้า
-const navigationRoutes = require('./routes/navigationRoutes'); // เส้นทางสำหรับการนำทาง
-const orderRoutes = require('./routes/orderRoutes'); // เส้นทางสำหรับการสั่งซื้อสินค้า
-const accountRoutes = require('./routes/accountRoutes'); // เส้นทางสำหรับบัญชีผู้ใช้
-const loginRoutes = require('./routes/loginRountrs'); // เส้นทางสำหรับการล็อกอิน
+const { router: cartRoutes } = require('./routes/cartRoutes');
+const navigationRoutes = require('./routes/navigationRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const accountRoutes = require('./routes/accountRoutes');
+const loginRoutes = require('./routes/loginRountrs');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // รองรับ PORT จาก Railway หรือใช้ 3000 เป็นค่าเริ่มต้น
+const PORT = process.env.PORT || 3000;
 
-// ใช้ express.json() เพื่อจัดการข้อมูล JSON ในคำขอ
+// Middleware
 app.use(express.json());
-
-// ใช้ static middleware เพื่อให้สามารถเข้าถึงไฟล์ในโฟลเดอร์ 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
-// เส้นทางสำหรับแสดงหน้า HTML
+// หน้า HTML หลัก
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html')); // หน้าแรก
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 // เส้นทาง API
-app.use('/api/cart', cartRoutes); // เส้นทางสำหรับ API ของตะกร้าสินค้า
-app.use('/navigation', navigationRoutes); // เส้นทางสำหรับการนำทาง
-app.use('/checkout', orderRoutes); // เส้นทางสำหรับการชำระเงิน
-app.use('/account', accountRoutes); // เส้นทางสำหรับบัญชีผู้ใช้
-app.use('/login', loginRoutes); // เส้นทางสำหรับการล็อกอิน
+app.use('/api/cart', cartRoutes);
+app.use('/navigation', navigationRoutes);
+app.use('/checkout', orderRoutes);
+app.use('/account', accountRoutes);
+app.use('/login', loginRoutes);
 
-// การจัดการข้อผิดพลาด
+// จัดการ 404
 app.use((req, res) => {
-    res.status(404).json({ error: 'Resource not found' }); // ส่งข้อผิดพลาด 404
+    res.status(404).json({ error: 'Resource not found' });
 });
 
+// จัดการ 500
 app.use((err, req, res, next) => {
-    console.error(err.stack); // แสดงรายละเอียดข้อผิดพลาดใน console
-    res.status(500).json({ error: 'Internal Server Error' }); // ส่งข้อผิดพลาด 500
+    console.error(err.stack);
+    res.status(500).json({ error: 'Internal Server Error' });
 });
 
-// เชื่อมต่อ MongoDB และเริ่มเซิร์ฟเวอร์
-mongoose.connect(process.env.MONGO_URL, {
+// เชื่อมต่อ MongoDB
+const mongoUri = process.env.MONGO_URL;
+if (!mongoUri) {
+    console.error('❌ Environment variable MONGO_URL is missing');
+    process.exit(1);
+}
+
+mongoose.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
