@@ -40,23 +40,32 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal Server Error' });
 });
 
-// เชื่อมต่อ MongoDB
-const mongoUri = process.env.MONGO_URL;
+// เชื่อมต่อ MongoDB แบบปลอดภัย
+const mongoUri = process.env.MONGO_URL || 'mongodb://mongo-db:27017';
+
 if (!mongoUri) {
     console.error('❌ Environment variable MONGO_URL is missing');
     process.exit(1);
 }
 
-mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-.then(() => {
-    console.log('✅ MongoDB connected');
+// ป้องกันการเชื่อมต่อซ้ำ
+if (mongoose.connection.readyState === 0) {
+    mongoose.connect(mongoUri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => {
+        console.log('✅ MongoDB connected');
+        app.listen(PORT, () => {
+            console.log(`🚀 Server is running on http://localhost:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('❌ MongoDB connection error:', err);
+    });
+} else {
+    console.log('⚠️ Mongoose already connected');
     app.listen(PORT, () => {
         console.log(`🚀 Server is running on http://localhost:${PORT}`);
     });
-})
-.catch((err) => {
-    console.error('❌ MongoDB connection error:', err);
-});
+}
