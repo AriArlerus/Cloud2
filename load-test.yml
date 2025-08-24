@@ -2,7 +2,7 @@ config:
   target: "https://cloud2-production.up.railway.app" 
   phases:
     - duration: 60
-      arrivalRate: 10
+      arrivalRate: 25
 scenarios:
   - flow:
       - get:
