@@ -1,55 +1,37 @@
-name: Build & Deploy to AWS ECS
+name: Deploy to ECS
 
 on:
   push:
-    branches:
-      - main
+    branches: [ arlerus ]
 
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECR_REPOSITORY: my-node-app
-  ECS_CLUSTER: my-node-cluster
-  ECS_SERVICE: my-node-service
-  ECS_TASK_DEFINITION: ecs-task-def.json
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::488453322320:role/github-actions-deployer
+          aws-region: ap-southeast-2
 
-    - name: Login to Amazon ECR
-      run: |
-        aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
-        docker login --username AWS --password-stdin \
-        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.ECR_REPO }}:latest .
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+          docker push ${{ secrets.ECR_REPO }}:latest
 
-    - name: Build Docker image
-      run: |
-        docker build -t ${{ env.ECR_REPOSITORY }} .
-
-    - name: Tag Docker image
-      run: |
-        docker tag ${{ env.ECR_REPOSITORY }}:latest \
-        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
-
-    - name: Push Docker image to Amazon ECR
-      run: |
-        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
-
-    - name: Deploy to Amazon ECS
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+      - name: Force ECS service to redeploy
+        run: |
+          aws ecs update-service \
+            --cluster my-node-cluster \
+            --service my-node-task-service \
+            --force-new-deployment \
+            --region ap-southeast-2
