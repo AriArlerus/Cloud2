@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.show-now').forEach(button => {
+    document.querySelectorAll('.shownow').forEach(button => {
         button.addEventListener('click', (event) => {
             window.location.href ='/navigation/product-list';
         });
