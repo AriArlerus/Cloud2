@@ -126,8 +126,9 @@ server.js
 
 ### 4. การทำงานของ CI/CD Pipeline และการ Deploy
 - เมื่อมีการ **Push** โค้ดใหม่ไปที่ **GitHub**, **GitHub Actions CI/CD Pipeline** จะทำงานทันทีเพื่อ **Build** โค้ดให้เป็น **Docker Image** แล้วทำการ **Push** image นั้นไปยัง **Amazon ECR** โดยตรง ซึ่งเป็น **คลังเก็บ Docker Image** บน **AWS**
-- หลังจากที่ **image** ใหม่ถูกเก็บไว้ที่ **Amazon ECR** เรียบร้อยแล้ว, **Railway** จะรับรู้ว่ามีเวอร์ชันใหม่ของ **image** ที่พร้อมใช้งาน
-- **Railway** จะสั่งให้ **AWS (ECS)** สร้างหรือ **อัปเดต ECS Task** ให้ใช้ **image** เวอร์ชันล่าสุดที่อยู่ใน **Amazon ECR**
+- หลังจากที่ **image** ใหม่ถูกเก็บไว้ที่ **Amazon ECR** เรียบร้อยแล้ว, **GitHub Actions** จะทำการ **Deploy** ทั้งไปที่ **AWS ECS** และ **Railway**
+   - **Railway** จะดึง **Docker Image** เวอร์ชันใหม่จาก **ECR** และทำการ **Deploy** ไปยัง **Railway Platform**
+   - **GitHub Actions** จะใช้ **AWS CLI** เพื่อสั่งให้ **AWS (ECS)** สร้างหรือ **อัปเดต ECS Task** ให้ใช้ **image** เวอร์ชันล่าสุดที่อยู่ใน **Amazon ECR**
 - **ECS** จะดึง **image** ใหม่จาก **ECR** มาประมวลผลเพื่อ **รันแอปพลิเคชันเวอร์ชันล่าสุด** บน **ECS Task** ใหม่ที่ถูกสร้างขึ้น
 <img width="946" height="359" alt="image" src="https://github.com/user-attachments/assets/03293084-2393-4927-9474-ac5f73044ae4" />
 
